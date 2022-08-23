@@ -1,4 +1,5 @@
 import json
+from threading import local
 from fastapi import FastAPI
 from storage import LocalStorage
 from pydantic import BaseModel
@@ -25,6 +26,10 @@ class Goods(BaseModel):
     creater:str=None
 
 #db auto generate end#
+
+@app.get("/reboot")
+def reboot():
+    storage.generateFastApiCode()
 
 #下面为自动生成代码 不要修改!!! 要不然下一次生成全部就全没咯！！！！
 #api auto generate#

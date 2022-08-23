@@ -6,7 +6,6 @@ if __name__ == "__main__":
     print("首先添加一个用户:xucheng 并且让名字为唯一字段")
     storage.setItem("userinfo",{"name[unique]":"xucheng","age":24})
 
-
     print("如果我们再添加一个用户叫做xucheng的人...那就会报错！")
     storage.setItem("userinfo",{"name":"xucheng","age":25})
 

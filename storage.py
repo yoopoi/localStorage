@@ -51,7 +51,7 @@ class LocalStorage:
             database+=".db"
         self.conn = sq.connect(database,check_same_thread=False)
     def excute(self,query):
-        # print(query)
+        print(query)
         try:
             c = self.conn.cursor()
             return c.execute(query)
@@ -77,7 +77,7 @@ class LocalStorage:
                 condition+="%s LIKE %s AND " %(_key,data[key])
             else:
                 condition+="%s = %s AND " %(_key,data[key])
-        condition+=" is_delete = false"
+        condition+=" is_delete = 0"
         query = "SELECT * FROM %s WHERE %s" % (tableName,condition)
         if "sort" in options and options["sort"]!="":
             query+= " ORDER BY %s" % options["sort"]
@@ -106,9 +106,6 @@ class LocalStorage:
         tables = self.getTableList()
         if (tableName,) not in tables:
             self._createTable(tableName,data)
-        # for key in data:
-        #     if type(data[key])==dict:
-        #         data[key] = "{%d}"%self.setItem(key,data[key])
         data = self._formatType(data)
         query = "INSERT INTO %s " %(tableName)
         query+="(%s)" % (",".join(self._formatDictKeyToList(data)))
@@ -129,7 +126,7 @@ class LocalStorage:
             query = '''
             CREATE TABLE %s(
             ID INTEGER PRIMARY KEY AUTOINCREMENT    NOT NULL,
-            is_delete BOOLEAN DEFAULT false,
+            is_delete BOOLEAN DEFAULT 0,
             ''' % (tableName)
             keys = _dict.keys()
             for key in keys:
@@ -151,13 +148,13 @@ class LocalStorage:
                 continue
             self._deleteOneTable(table[0])
     def keys(self,tableName,index):
-        query = "SELECT key FROM %s WHERE is_delete = false" % (tableName)
+        query = "SELECT key FROM %s WHERE is_delete = 0" % (tableName)
         if index:
             query+=" and ID = %d" % index
         res = self.excute(query)
         return res.fetchall()
     def length(self,tableName)->int:
-        query = "SELECT ID FROM %s WHERE is_delete = false" % (tableName)
+        query = "SELECT ID FROM %s WHERE is_delete = 0" % (tableName)
         res = self.excute(query)
         if res:
             return len(res.fetchall())
@@ -193,8 +190,8 @@ class LocalStorage:
             if type(data[key])==str:
                 data[key] = '"'+data[key]+'"'
             condition+="%s = %s AND " %(key,data[key])
-        condition+=" is_delete = false;"
-        query = "UPDATE %s SET is_delete = true WHERE %s" %(tableName,condition)
+        condition+=" is_delete = 0;"
+        query = "UPDATE %s SET is_delete = 1 WHERE %s" %(tableName,condition)
         res = self.excute(query)
         if res:
             self.conn.commit()
@@ -222,7 +219,7 @@ class LocalStorage:
                 editData[key] = '"'+editData[key]+'"'
             editStr+=" %s = %s," %(key,editData[key])
         editStr = editStr[:-1]
-        condition+=" is_delete = false;"
+        condition+=" is_delete = 0;"
         query = "UPDATE %s SET %s WHERE %s" %(tableName,editStr,condition)
         res = self.excute(query)
         if res:
