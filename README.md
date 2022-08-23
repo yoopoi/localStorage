@@ -1,0 +1,2 @@
+# localStorage
+一款能自动生成FastApi代码自动生成数据库表的curd小工具
